@@ -43,7 +43,7 @@ def r_c_testing():
         for j in range(0, r):
             each[f"exp_{j}"] = each["no"] * (total[j] / total_num)
             exp_f.append(each[f"exp_{j}"])
-            b = (each[f"{j}"] - each[f"exp_{j}"]) ** 2 / (each[f"exp_{j}"])
+            b = round((each[f"{j}"] - each[f"exp_{j}"]) ** 2 / (each[f"exp_{j}"]), 3)
             total_chi_square += b
             contribution_to_chi2.append(b)
 

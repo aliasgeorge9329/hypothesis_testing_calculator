@@ -121,11 +121,15 @@ def goodness_fit_gamma():
     for each in new_data:
         reduced_table.add_row([each['obf'], each['probability'], each['exp_obf']])
 
-    print(f"\n{reduced_table}")
-
     total_chi_square = 0
+    contribution_to_chi2 = []
     for each in new_data:
-        total_chi_square += (each["obf"] - each["exp_obf"]) ** 2 / each["exp_obf"]
+        b = round((each["obf"] - each["exp_obf"]) ** 2 / each["exp_obf"], 3)
+        total_chi_square += b
+        contribution_to_chi2.append(b)
+    reduced_table.add_column('Contribution to χ^2', contribution_to_chi2)
+
+    print(f"\n{reduced_table}")
 
     print(f"\n{bcolors.BOLD}{bcolors.WARNING}Null hypothesis: Random variable has a Gamma distribution with ⍺= {a_}, β = {b_}.")
     print(f"Alternative hypothesis: Random variable does not have the Gamma distribution with ⍺= {a_}, β = {b_}.{bcolors.ENDC}\n")

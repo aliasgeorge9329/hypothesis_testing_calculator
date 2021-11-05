@@ -19,14 +19,14 @@ def matched_pair_t_test():
     n = len(D)
     mean = statistics.mean(D)
     std_devi = statistics.stdev(D)
-    print(f"Matched pair\n {D}")
+    print(f"\nMatched pair\n{D}\n")
     print(f"Mean of the Matched pair data: {mean}")
-    print(f"Standard Deviation of the Matched pair data: {std_devi}")
+    print(f"Standard Deviation of the Matched pair data: {std_devi}\n")
 
     claim_mean = float(input("Mean Difference μD: "))
     test_statistics_value = (mean - claim_mean) / (std_devi / math.sqrt(n))
 
-    print(f"{bcolors.OKCYAN}Select the alternative Hypothesis to test with null μD = {claim_mean}{bcolors.FAIL}")
+    print(f"\n{bcolors.OKCYAN}Select the alternative Hypothesis to test with null μD = {claim_mean}{bcolors.FAIL}")
     print(f"1. μD < {claim_mean} ")
     print(f"2. μD > {claim_mean} ")
     print(f"3. μD != {claim_mean}{bcolors.ENDC} ")
