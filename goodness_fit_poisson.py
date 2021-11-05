@@ -81,7 +81,7 @@ def goodness_fit_poisson():
 
         new_data.append(a)
 
-        if final == no - 1:
+        if final == no - 1 or slicing.index(each) == len(slicing) - 1:
             break
 
         else:
@@ -92,6 +92,14 @@ def goodness_fit_poisson():
                 a["probability"] = data[i]["probability"]
                 a["exp_obf"] = data[i]["exp_obf"]
                 new_data.append(a)
+
+    if slicing[len(slicing)-1][1] != no - 1:
+        for i in range(slicing[len(slicing)-1][1] + 1, no):
+            a = dict()
+            a["obf"] = data[i]["obf"]
+            a["probability"] = data[i]["probability"]
+            a["exp_obf"] = data[i]["exp_obf"]
+            new_data.append(a)
 
     for each in new_data:
         reduced_table.add_row([each['obf'], each['probability'], each['exp_obf']])
