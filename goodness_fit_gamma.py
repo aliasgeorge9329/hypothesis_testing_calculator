@@ -9,9 +9,9 @@ reduced_table = PrettyTable(['Observed Frequency', 'Gamma Probabilities of Inter
 def goodness_fit_gamma():
     # Gamma
     alpha_ = float(input("Level of significance: "))
-    a_ = float(input("Enter the shape parameter a: "))
-    mean = float(input("Enter the mean μ : "))
-    std_devi = float(input("Enter the standard deviation 𝜎 : "))
+    a_ = float(input("Enter the shape parameter ⍺: "))
+    b_ = float(input("Enter the shape parameter β: "))
+    std_devi = 1/b_
 
     no = int(input(f"Enter the no of Categories : "))
 
@@ -26,7 +26,7 @@ def goodness_fit_gamma():
         a = dict()
         a["x_h"] = int(input(f"Enter the Enter the Highest of each interval_0: "))
         a["obf"] = int(input(f"Enter the Observed Frequency for interval_0: "))
-        a["probability"] = round(gamma.cdf(a["x_h"], a=a_, loc=mean, scale=std_devi),4)
+        a["probability"] = round(gamma.cdf(a["x_h"], a=a_, scale=std_devi),4)
         print("\n")
         data.append(a)
         table.add_row([f'< {a["x_h"]}', a["obf"], a["probability"]])
@@ -37,7 +37,7 @@ def goodness_fit_gamma():
             a["x_l"] = last_final
             a["x_h"] = int(input(f"Enter the Enter the Highest of each interval_{i}: "))
             a["obf"] = int(input(f"Enter the Observed Frequency for interval_{i}: "))
-            a["probability"] = round((gamma.cdf(a["x_h"], a=a_,  loc=mean, scale=std_devi) - gamma.cdf(a["x_l"], a=a_, loc=mean, scale=std_devi)), 4)
+            a["probability"] = round((gamma.cdf(a["x_h"], a=a_, scale=std_devi) - gamma.cdf(a["x_l"], a=a_, scale=std_devi)), 4)
             print("\n")
             last_final = a["x_h"]
             data.append(a)
@@ -46,7 +46,7 @@ def goodness_fit_gamma():
         a = dict()
         a["x_l"] = int(input(f"Enter the Lowest of Interval of_{no - 1}: "))
         a["obf"] = int(input(f"Enter the Observed Frequency for Interval of_{no - 1}: "))
-        a["probability"] = round((1 - gamma.cdf(a["x_l"], a=a_,  loc=mean, scale=std_devi)), 4)
+        a["probability"] = round((1 - gamma.cdf(a["x_l"], a=a_,  scale=std_devi)), 4)
         print("\n")
         data.append(a)
         table.add_row([f'{a["x_l"]} >', a["obf"], a["probability"]])
@@ -57,7 +57,7 @@ def goodness_fit_gamma():
             a["x_l"] = int(input(f"Enter the Enter the Lowest of each interval_{i}: "))
             a["x_h"] = int(input(f"Enter the Enter the Highest of each interval_{i}: "))
             a["obf"] = int(input(f"Enter the Observed Frequency for interval_{i}: "))
-            a["probability"] = round((gamma.cdf(a["x_h"], a=a_,  loc=mean, scale=std_devi) - gamma.cdf(a["x_l"], a=a_, loc=mean, scale=std_devi)), 4)
+            a["probability"] = round((gamma.cdf(a["x_h"], a=a_, scale=std_devi) - gamma.cdf(a["x_l"], a=a_, scale=std_devi)), 4)
             print("\n")
             data.append(a)
             table.add_row([f'{a["x_l"]} < {a["x_h"]}', a["obf"], a["probability"]])
@@ -127,14 +127,22 @@ def goodness_fit_gamma():
     for each in new_data:
         total_chi_square += (each["obf"] - each["exp_obf"]) ** 2 / each["exp_obf"]
 
+    print(f"\n{bcolors.BOLD}{bcolors.WARNING}Null hypothesis: Random variable has a Gamma distribution with ⍺= {a_}, β = {b_}.")
+    print(f"Alternative hypothesis: Random variable does not have the Gamma distribution with ⍺= {a_}, β = {b_}.{bcolors.ENDC}\n")
+
     print("\nCalculations\n")
     print(f"Total Chi_square: {total_chi_square}\n")
     print(f"Decision")
 
     critical_value = (round((chi2.isf(alpha_, df=len(new_data)-1)), 4))
-    print(f"The null must be rejected if χ^2 < {critical_value}\n{bcolors.FAIL}")
+    print(f"The null must be rejected if χ^2 > {critical_value}\n{bcolors.FAIL}")
     if total_chi_square > critical_value:
-        print(f"Null 'Data fit to the distribution'  is Rejected and so Accept 'Data not fit to the distribution' ")
+        print(f"Since χ^2 = {total_chi_square} exceed {critical_value}, the null 'Data fit to the distribution'"
+              f" must be Rejected at level of significance {alpha_} and Accept 'Data not fit to the distribution' ")
     else:
-        print(f"Failure to reject Null 'Data fit to the distribution'  ")
+        print(f"Since χ^2 = {total_chi_square} does not exceed {critical_value}, the null hypothesis cannot be "
+              f"rejected; we cannot reject that the Gamma distribution with ⍺= {a_}, β = {b_} provides a good fit at level "
+              f"⍺ = {alpha_}.")
+
+    print(f"{bcolors.ENDC}")
 

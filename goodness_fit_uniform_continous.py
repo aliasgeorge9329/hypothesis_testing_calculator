@@ -130,14 +130,26 @@ def goodness_fit_uniform_continuous():
     for each in new_data:
         total_chi_square += (each["obf"] - each["exp_obf"]) ** 2 / each["exp_obf"]
 
+    print(f"\n{bcolors.BOLD}{bcolors.WARNING}Null hypothesis: Random variable has a Uniform Continuous "
+          f"distribution with "
+          f"a = {a_} and b = {b_}")
+    print(f"Alternative hypothesis: Random variable does not have the Uniform Continuous distribution with a = {a_} and "
+          f"b = {b_}.{bcolors.ENDC}\n")
+
     print("\nCalculations\n")
     print(f"Total Chi_square: {total_chi_square}\n")
     print(f"Decision")
 
-    critical_value = (round((chi2.isf(alpha_, df=len(new_data)-1)), 4))
-    print(f"The null must be rejected if χ^2 < {critical_value}\n{bcolors.FAIL}")
+    critical_value = (round((chi2.isf(alpha_, df=len(new_data) - 1)), 4))
+    print(f"The null must be rejected if χ^2 > {critical_value}\n{bcolors.FAIL}")
     if total_chi_square > critical_value:
-        print(f"Null 'Data fit to the distribution'  is Rejected and so Accept 'Data not fit to the distribution' ")
+        print(f"Since χ^2 = {total_chi_square} exceed {critical_value}, the null 'Data fit to the distribution'"
+              f" must be Rejected at level of significance {alpha_} and Accept 'Data not fit to the distribution' ")
     else:
-        print(f"Failure to reject Null 'Data fit to the distribution'  ")
+        print(f"Since χ^2 = {total_chi_square} does not exceed {critical_value}, the null hypothesis cannot be "
+              f"rejected; we cannot reject that the Uniform Continuous distribution with λ a = {a_} and b = {b_}"
+              f" provides a good fit at level "
+              f"⍺ = {alpha_}.")
+
+    print(f"{bcolors.ENDC}")
 
