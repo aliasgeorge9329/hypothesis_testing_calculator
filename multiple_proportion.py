@@ -1,5 +1,7 @@
 from scipy.stats import chi
 from color import *
+from prettytable import PrettyTable
+table = PrettyTable(['Observed Frequency', 'Expected Observed Frequency', 'Contribution to χ^2'])
 
 
 def multiple_proportion():
@@ -51,6 +53,11 @@ def multiple_proportion():
         total_chi_square += (each["success"]-each["exp_success"])**2/(each["exp_success"]) +\
                             (each["failures"] - each["exp_failures"]) ** 2 / (each["exp_failures"])
 
+        table.add_row([each["success"], each["exp_success"], (each["success"]-each["exp_success"])**2/(each["exp_success"])])
+        table.add_row([each["failures"], each["exp_failures"],
+                      (each["failures"] - each["exp_failures"]) ** 2 / (each["exp_failures"])])
+
+    print(f"\n{table}\n")
     test_statistics_value = total_chi_square
 
     critical_value = (round((chi.isf(alpha, df=k - 1)) ** 2, 4))

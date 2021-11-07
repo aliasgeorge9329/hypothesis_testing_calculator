@@ -23,7 +23,7 @@ def goodness_fit_binomial():
 
     print(f"\n{bcolors.OKBLUE}Does the random variable values at last category is ")
     print(f"1. last no")
-    print(f"2. >last no{bcolors.ENDC}")
+    print(f"2. last no{bcolors.ENDC} >")
     sel = int(input())
     print("\n")
 
@@ -51,17 +51,17 @@ def goodness_fit_binomial():
         for each in data:
             each["probability"] = round(binom.pmf(each["x"], n_, p_), 3)
             each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
+            table.add_row([each['x'], each['obf'], each['probability'], each['exp_obf']])
 
     elif sel == 2:
         for each in data[0:len(data)-1]:
             each["probability"] = round(binom.pmf(each["x"], n_, p_), 3)
             each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
+            table.add_row([each['x'], each['obf'], each['probability'], each['exp_obf']])
 
         data[len(data)-1]["probability"] = binom.sf(data[len(data)-1]["x"], n_, p_) + binom.pmf(data[len(data)-1]["x"], n_, p_)
         data[len(data)-1]["exp_obf"] = int(data[len(data)-1]["probability"] * total_obf * 10) / 10
-
-    for each in data:
-        table.add_row([each['x'], each['obf'], each['probability'], each['exp_obf']])
+        table.add_row([f"{data[len(data)-1]['x']} >", data[len(data)-1]['obf'], data[len(data)-1]["probability"], data[len(data)-1]["exp_obf"]])
 
     print(f"\n{table}")
 
