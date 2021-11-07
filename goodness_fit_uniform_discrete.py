@@ -1,15 +1,19 @@
-from scipy.stats import randint, chi2
+from scipy.stats import chi2
 from prettytable import PrettyTable
-from slicing import *
+from combining import *
 from color import *
 table = PrettyTable(['X', 'Observed Frequency', 'Uniform Discrete Probabilities', 'Expected Frequency'])
 reduced_table = PrettyTable(['Observed Frequency', 'Uniform Discrete Probabilities', 'Expected Frequency'])
 
 
+def uniform_discrete(x, a_, b_):
+    return 1/(b_-a_+1)
+
+
 def goodness_fit_uniform_discrete():
     # Binomial
     alpha = float(input("Level of significance: "))
-    print("f(k)= 1/(b-a) \nk belongs to {a,........,b-1\n")
+    print("f(k)= 1/(b-a+1) \nk belongs to {a,........,b-1}\n")
     a_ = float(input("Enter the a: "))
     b_ = float(input("Enter the b: "))
 
@@ -21,19 +25,20 @@ def goodness_fit_uniform_discrete():
 
     selection = int(input())
     print("\n")
+
     data = []
     if selection == 1:
         for i in range(0, no):
             a = dict()
             a["x"] = i
-            a["obf"] = int(input(f"Enter the Observed Frequency for {a['x']} "))
+            a["obf"] = float(input(f"Enter the Observed Frequency for {a['x']} "))
             data.append(a)
 
     if selection == 2:
         for i in range(0, no):
             a = dict()
-            a["x"] = int(input(f"Enter the random variable value {i}"))
-            a["obf"] = int(input(f"Enter the Observed Frequency for {a['x']} "))
+            a["x"] = float(input(f"Enter the random variable value {i} "))
+            a["obf"] = float(input(f"Enter the Observed Frequency for {a['x']} "))
             print("\n")
             data.append(a)
 
@@ -42,7 +47,7 @@ def goodness_fit_uniform_discrete():
         total_obf += each["obf"]
 
     for each in data:
-        each["probability"] = round(randint.pmf(each["x"], a_, b_), 3)
+        each["probability"] = round(uniform_discrete(each["x"], a_, b_), 3)
         each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
 
     for each in data:
@@ -50,58 +55,7 @@ def goodness_fit_uniform_discrete():
 
     print(f"\n{table}")
 
-    # Reduction
-
-    slicing = []
-    for each in data:
-        slicing.append(each["obf"])
-    slicing = slicing_(slicing, no)
-
-    print(f"\nCombined categories (initial,final) {slicing}")
-
-    new_data = []
-    if slicing[0][0] != 0:
-        for i in range(0, slicing[0][0]):
-            a = dict()
-            a["obf"] = data[i]["obf"]
-            a["probability"] = data[i]["probability"]
-            a["exp_obf"] = data[i]["exp_obf"]
-            new_data.append(a)
-
-    for each in slicing:
-        initial = each[0]
-        final = each[1]
-        a = dict()
-        a["obf"] = 0
-        a["probability"] = 0
-        a["exp_obf"] = 0
-
-        for i in range(initial, final + 1):
-            a["obf"] += data[i]["obf"]
-            a["probability"] += data[i]["probability"]
-            a["exp_obf"] += data[i]["exp_obf"]
-
-        new_data.append(a)
-
-        if final == no - 1 or slicing.index(each) == len(slicing) - 1:
-            break
-
-        else:
-            new_initial = slicing[slicing.index(each) + 1][0]
-            for i in range(final + 1, new_initial):
-                a = dict()
-                a["obf"] = data[i]["obf"]
-                a["probability"] = data[i]["probability"]
-                a["exp_obf"] = data[i]["exp_obf"]
-                new_data.append(a)
-
-    if slicing[len(slicing)-1][1] != no - 1:
-        for i in range(slicing[len(slicing)-1][1] + 1, no):
-            a = dict()
-            a["obf"] = data[i]["obf"]
-            a["probability"] = data[i]["probability"]
-            a["exp_obf"] = data[i]["exp_obf"]
-            new_data.append(a)
+    new_data = combining(data, no)
 
     for each in new_data:
         reduced_table.add_row([each['obf'], each['probability'], each['exp_obf']])

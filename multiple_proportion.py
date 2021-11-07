@@ -8,13 +8,30 @@ def multiple_proportion():
 
     data = []
     print("\n")
-    for i in range(0, k):
-        a = dict()
-        a["success"] = int(input(f"No of success of p{i+1}: "))
-        a["failures"] = int(input(f"No of failures of p{i+1}: "))
-        print("\n")
-        a["no"] = a["success"] + a["failures"]
-        data.append(a)
+    print("Data Format")
+    print("1. Total_no and Success")
+    print("2. Success and Failures")
+    selection = int(input())
+    if selection == 1:
+        for i in range(0, k):
+            a = dict()
+            a["no"] = int(input(f"Total No of p{i + 1}: "))
+            a["success"] = int(input(f"No of success of p{i + 1}: "))
+            print("\n")
+            a["failures"] = a["no"] - a["success"]
+            data.append(a)
+
+    elif selection == 2:
+        for i in range(0, k):
+            a = dict()
+            a["success"] = int(input(f"No of success of p{i + 1}: "))
+            a["failures"] = int(input(f"No of failures of p{i + 1}: "))
+            print("\n")
+            a["no"] = a["success"] + a["failures"]
+            data.append(a)
+    else:
+        print("Invalid")
+        exit(0)
 
     total_success = 0
     total_failures = 0

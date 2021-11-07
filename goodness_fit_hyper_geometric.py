@@ -1,6 +1,6 @@
 from scipy.stats import hypergeom, chi2
 from prettytable import PrettyTable
-from slicing import *
+from combining import *
 from color import *
 table = PrettyTable(['X', 'Observed Frequency', 'Hyper_geometric Probabilities', 'Expected Frequency'])
 reduced_table = PrettyTable(['Observed Frequency', 'Hyper_geometric Probabilities', 'Expected Frequency'])
@@ -21,6 +21,13 @@ def goodness_fit_hyper_geometric():
 
     selection = int(input())
     print("\n")
+
+    print(f"\n{bcolors.OKBLUE}Does the random variable values at last category is ")
+    print(f"1. last no")
+    print(f"2. >last no{bcolors.ENDC}")
+    sel = int(input())
+    print("\n")
+
     data = []
     if selection == 1:
         for i in range(0, no):
@@ -41,67 +48,26 @@ def goodness_fit_hyper_geometric():
     for each in data:
         total_obf += each["obf"]
 
-    for each in data:
-        each["probability"] = round(hypergeom.pmf(each["x"], _M, _n, _N), 3)
-        each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
+    if sel == 1:
+        for each in data:
+            each["probability"] = round(hypergeom.pmf(each["x"],  _M, _n, _N), 3)
+            each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
+
+    elif sel == 2:
+        for each in data[0:len(data)-1]:
+            each["probability"] = round(hypergeom.pmf(each["x"],  _M, _n, _N), 3)
+            each["exp_obf"] = int(each["probability"] * total_obf * 10) / 10
+
+        data[len(data)-1]["probability"] = hypergeom.sf(data[len(data)-1]["x"],  _M, _n, _N) + hypergeom.pmf(data[len(data)-1]["x"],  _M, _n, _N)
+        data[len(data)-1]["exp_obf"] = int(data[len(data)-1]["probability"] * total_obf * 10) / 10
+
 
     for each in data:
         table.add_row([each['x'], each['obf'], each['probability'], each['exp_obf']])
 
     print(f"\n{table}")
 
-    # Reduction
-
-    slicing = []
-    for each in data:
-        slicing.append(each["obf"])
-    slicing = slicing_(slicing, no)
-
-    print(f"\nCombined categories (initial,final) {slicing}")
-
-    new_data = []
-    if slicing[0][0] != 0:
-        for i in range(0, slicing[0][0]):
-            a = dict()
-            a["obf"] = data[i]["obf"]
-            a["probability"] = data[i]["probability"]
-            a["exp_obf"] = data[i]["exp_obf"]
-            new_data.append(a)
-
-    for each in slicing:
-        initial = each[0]
-        final = each[1]
-        a = dict()
-        a["obf"] = 0
-        a["probability"] = 0
-        a["exp_obf"] = 0
-
-        for i in range(initial, final + 1):
-            a["obf"] += data[i]["obf"]
-            a["probability"] += data[i]["probability"]
-            a["exp_obf"] += data[i]["exp_obf"]
-
-        new_data.append(a)
-
-        if final == no - 1 or slicing.index(each) == len(slicing) - 1:
-            break
-
-        else:
-            new_initial = slicing[slicing.index(each) + 1][0]
-            for i in range(final + 1, new_initial):
-                a = dict()
-                a["obf"] = data[i]["obf"]
-                a["probability"] = data[i]["probability"]
-                a["exp_obf"] = data[i]["exp_obf"]
-                new_data.append(a)
-
-    if slicing[len(slicing)-1][1] != no - 1:
-        for i in range(slicing[len(slicing)-1][1] + 1, no):
-            a = dict()
-            a["obf"] = data[i]["obf"]
-            a["probability"] = data[i]["probability"]
-            a["exp_obf"] = data[i]["exp_obf"]
-            new_data.append(a)
+    new_data = combining(data, no)
 
     for each in new_data:
         reduced_table.add_row([each['obf'], each['probability'], each['exp_obf']])
